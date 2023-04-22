@@ -3,6 +3,7 @@ import Signup from "./components/navbar/Signup";
 import Login from "./components/navbar/Login";
 
 import Home from "./pages/Home";
+
 function App() {
   return (
     <div className="App">
