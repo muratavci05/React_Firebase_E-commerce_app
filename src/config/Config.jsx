@@ -35,4 +35,8 @@ Sonra: sürüm 9 uyumluluğu (Yeni)
 // v9 compat packages are API compatible with v8 code
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
-import 'firebase/compat/firestore'; */
+import 'firebase/compat/firestore'; 
+
+bibliography: stackoverflow
+link: https://stackoverflow.com/questions/68929593/vue-2-export-default-imported-as-firebase-was-not-found-in-firebase-app
+*/

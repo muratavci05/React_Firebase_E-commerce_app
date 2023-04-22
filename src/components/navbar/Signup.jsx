@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { auth,firestore,storage } from "../../config/Config";
+import { auth, firestore } from "../../config/Config";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,13 +21,27 @@ const Signup = () => {
       .createUserWithEmailAndPassword(email, password)
       .then((credentials) => {
         console.log(credentials);
-        firestore.collection("users").doc(credentials.user.uid).set({
-          FullName: fullName,
-          Email: email,
-          Password: password
-        }).then(()=>{
-          setSuccesMsg("Signup Successfull. You will now get redirected to Login")
-        })
+        firestore
+          .collection("users")
+          .doc(credentials.user.uid)
+          .set({
+            FullName: fullName,
+            Email: email,
+            Password: password,
+          })
+          .then(() => {
+            setSuccesMsg(
+              "Signup Successfull. You will now automatically get redirected to Login"
+            );
+            setFullName("");
+            setEmail("");
+            setPassword("");
+            setErrMsg("");
+            setTimeout(() => {
+              setSuccesMsg("");
+              navigate("/login");
+            }, 3000);
+          });
       })
       .catch((error) => {
         setErrMsg(error.message);
@@ -38,6 +53,10 @@ const Signup = () => {
       <br></br>
       <h1>Sign Up</h1>
       <hr></hr>
+      {successMsg&& <>
+          <div className="success-msg">{successMsg}</div>
+      </>}
+      
       <form
         onSubmit={handleSignUp}
         className="form-group col-sm-4"
@@ -83,6 +102,12 @@ const Signup = () => {
           </button>
         </div>
       </form>
+      {errMsg&& <>
+       <br/><br/>
+          <div className="error-msg">{errMsg}</div>
+         
+
+      </>}
     </div>
   );
 };

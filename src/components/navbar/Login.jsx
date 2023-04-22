@@ -1,16 +1,38 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { auth, firestore } from "../../config/Config";
+
+
 const Login = () => {
+  const navigate = useNavigate()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [errMsg, setErrMesg] = useState("");
+  const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccesMsg] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
     /* console.log("email :", email)
     console.log("password :", password) */
+
+    auth.signInWithEmailAndPassword(email,password)
+    .then(()=>{
+      setSuccesMsg(
+        "Login Successfull. You will now automatically get redirected to Home Page"
+      );
+      setEmail("");
+            setPassword("");
+            setErrMsg("");
+            setTimeout(() => {
+              setSuccesMsg("");
+              navigate("/");
+            }, 3000);
+    })
+    .catch((error) => {
+      setErrMsg(error.message);
+    });
+
   };
   return (
     <div className="container">
@@ -18,6 +40,9 @@ const Login = () => {
       <br></br>
       <h1>Login</h1>
       <hr></hr>
+      {successMsg&& <>
+          <div className="success-msg">{successMsg}</div>
+      </>}
       <form
         onSubmit={handleLogin}
         className="form-group col-sm-4"
@@ -55,6 +80,12 @@ const Login = () => {
           </button>
         </div>
       </form>
+      {errMsg&& <>
+       <br/><br/>
+          <div className="error-msg">{errMsg}</div>
+         
+
+      </>}
     </div>
   );
 };
