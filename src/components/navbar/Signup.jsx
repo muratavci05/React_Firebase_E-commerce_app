@@ -40,7 +40,7 @@ const Signup = () => {
             setTimeout(() => {
               setSuccesMsg("");
               navigate("/login");
-            }, 3000);
+            }, 1000);
           });
       })
       .catch((error) => {
@@ -52,7 +52,7 @@ const Signup = () => {
       <br></br>
       <br></br>
       <h1>Sign Up</h1>
-      <hr></hr>
+      <hr/>
       {successMsg&& <>
           <div className="success-msg">{successMsg}</div>
       </>}

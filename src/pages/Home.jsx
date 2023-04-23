@@ -12,25 +12,28 @@ const Home = () => {
     useEffect(() => {
       auth.onAuthStateChanged((user) => {
         if (user) {
-
-          firestore.collection ("user").doc(user.uid).get().then(snapshot=>{
-            setUser(snapshot.data().FullName)
-          })
+          firestore
+            .collection("users")
+            .doc(user.uid)
+            .get()
+            .then((snapshot) => {
+              setUser(snapshot.data().FullName);
+            });
         } else {
           setUser(null);
         }
       });
-    }, [])
+    }, []);
     return user;
   }
 
   const user = GetCurrentUser();
-  /* console.log("kullanıcı", user); */
+  console.log("kullanıcı", user);
   return (
-    <div>
-      <Navbar />
+    <>
+      <Navbar user={user} />
       <Product />
-    </div>
+    </>
   );
 };
 

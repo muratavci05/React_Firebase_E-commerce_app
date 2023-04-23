@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, firestore } from "../../config/Config";
+import { auth } from "../../config/Config";
 
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
             setTimeout(() => {
               setSuccesMsg("");
               navigate("/");
-            }, 3000);
+            }, 1000);
     })
     .catch((error) => {
       setErrMsg(error.message);
@@ -39,7 +39,7 @@ const Login = () => {
       <br></br>
       <br></br>
       <h1>Login</h1>
-      <hr></hr>
+      <hr/>
       {successMsg&& <>
           <div className="success-msg">{successMsg}</div>
       </>}

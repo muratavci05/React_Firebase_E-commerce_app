@@ -5,7 +5,7 @@ import { auth } from "../../config/Config";
 import { Icon } from "react-icons-kit";
 import { shoppingCart } from "react-icons-kit/feather/shoppingCart";
 
-const Navbar = ({ user }) => {
+const Navbar = ({user}) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +22,7 @@ const Navbar = ({ user }) => {
           </div>
         </div>
         <div className="rightside">
-          {!user && 
+          {!user&& 
             <>
               <div>
                 <Link className="navlink " to="signup">
@@ -36,7 +36,7 @@ const Navbar = ({ user }) => {
               </div>
             </>
           }
-          {user && 
+          {user&& 
             <>
               <div>
                 <Link className="navlink" to="/">
