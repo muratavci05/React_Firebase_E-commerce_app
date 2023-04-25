@@ -3,7 +3,24 @@ import Navbar from "../components/navbar/Navbar";
 import Products from "../components/Products";
 import { auth, firestore } from "../config/Config";
 
-const Home = () => {
+const Home = (props) => {
+
+  // getting current user uid
+
+  function GetUserUid (){
+    const [uid,setUid] = useState(null)
+    useEffect(()=>{
+      auth.onAuthStateChanged(user=>{
+        if(user){
+          setUid(user.uid)
+        }
+      })
+    },[])
+    return uid;
+  }
+
+  const uid = GetUserUid();
+
   //getting current user function
 
   function GetCurrentUser() {
@@ -52,6 +69,24 @@ const Home = () => {
   useEffect(()=>{
     getProducts();
   },[])
+
+
+  let Product;
+  const addToCard =(product)=>{
+
+    if(uid!== null){
+      //console.log(product)
+        Product=product;
+        Product['gty']=1;
+        Product['TotalProductPrice']=Product.gty*Product.price;
+        firestore.collection("Cart " + uid).doc(product.ID).set(Product).then(()=>{
+          console.log("Successfully added to cart")
+        })
+    }
+    else{
+      props.navigate("/login")
+    }
+  }
   return (
     <>
       <Navbar user={user} />
@@ -60,7 +95,7 @@ const Home = () => {
           <div className="container-fluid">
               <h1 className="text-center">Products</h1>
               <div className="products-box">
-                <Products products={products}/>
+                <Products products={products} addToCard={addToCard}/>
               </div>
           </div>
         )
