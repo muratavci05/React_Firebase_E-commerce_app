@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./navbar/Navbar";
 import { auth, firestore } from "../config/Config";
 
+import StripeCheckout from "react-stripe-checkout";
+
 import CartProducts from "./CartProducts";
 
 const Cart = () => {
@@ -53,6 +55,27 @@ const Cart = () => {
 
   // console.log(cartProducts)
 
+  // getting the gty from cartProducts in a seperate array
+  const gty = cartProducts.map((cartProduct) => {
+    return cartProduct.gty;
+  });
+
+  // reducing the gty in a single value
+  const reducerOfQty = (accumulator, currentValue) =>
+    accumulator + currentValue;
+  const totalQty = gty.reduce(reducerOfQty, 0);
+  //console.log(totalQty);
+
+  // gettin the TotalProductPrice from cartProducts in a seperate array
+  const price = cartProducts.map((cartProduct) => {
+    return cartProduct.TotalProductPrice;
+  });
+  // reducing the price in a single value
+  const reducerOfPrice = (accumulator, currentValue) =>
+    accumulator + currentValue;
+
+  const totalPrice = price.reduce(reducerOfPrice, 0);
+
   // global variable
   let Product;
 
@@ -101,9 +124,28 @@ const Cart = () => {
     }
   };
 
+  // state of totalProducts
+  const [totalProducts, setTotalProducts] = useState(0);
+  // getting cart products
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        firestore.collection("Cart " + user.uid).onSnapshot((snapshot) => {
+          const gty = snapshot.docs.length;
+          setTotalProducts(gty);
+        });
+      }
+    });
+  }, []);
+
+  // charging payment
+  const handleToken = (token) => {
+    console.log(token);
+  };
+
   return (
     <>
-      <Navbar user={user} />
+      <Navbar user={user} totalProducts={totalProducts} />
       <br />
       {cartProducts.length > 0 && (
         <div className="container-fluid">
@@ -114,6 +156,25 @@ const Cart = () => {
               cartProductIncrease={cartProductIncrease}
               cartProductDecrease={cartProductDecrease}
             />
+          </div>
+          <div className="summary-box">
+            <h5>Cart Summary</h5>
+           <br/>
+            <div>
+              Total No of Products: <span>{totalQty}</span>
+            </div>
+            <div>
+              Total Price to Pay: <span>$ {totalPrice}</span>
+            </div>
+           <br/>
+            <StripeCheckout
+              stripeKey="pk_test_51N142SLBmYGXNvnxVIzSAeQQzvx2RZrNpUuvM2lS6rRGhdJWbpMxdFgUSDwVtLsziDFftKQr3QVmIR7DkTliDSji00ArbNgHqz"
+              token={handleToken}
+              billingAddress
+              shippingAddress
+              name="All Products"
+              amount={totalPrice * 100}
+            ></StripeCheckout>
           </div>
         </div>
       )}
