@@ -15,9 +15,9 @@ app.get("/",(req,res)=>{
 app.post("/checkout", async (req,res)=>{
     let error;
     let status;
-    try {
+    try{
         const {cart, token}=req.body;
-        const customer = await stripe.customers.create({
+        const customer = await stripe.customer.create({
             email:token.email,
             source: token.id
         })
@@ -31,11 +31,11 @@ app.post("/checkout", async (req,res)=>{
             shipping: {
                 name: token.card.name,
                 address: {
-                    line1: token.card.address_line1,
-                    line2: token.card.address_line2,
-                    city: token.card.address_city,
+                    line1: token.card.adress_line1,
+                    line2: token.card.adress_line2,
+                    city: token.card.adress_city,
                     country: token.card.address_country,
-                    postal_code: token.card.address_zip
+                    postal_code: token.card.adress_zip
 
                 }
             }
