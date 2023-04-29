@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Navbar from "./navbar/Navbar";
 import { auth, firestore } from "../config/Config";
@@ -5,6 +6,12 @@ import { auth, firestore } from "../config/Config";
 import StripeCheckout from "react-stripe-checkout";
 
 import CartProducts from "./CartProducts";
+
+import { useNavigate } from "react-router-dom";
+
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const Cart = () => {
   //getting current user function
@@ -139,9 +146,40 @@ const Cart = () => {
   }, []);
 
   // charging payment
-  const handleToken = (token) => {
-    console.log(token);
-  };
+  const navigate = useNavigate();
+
+  const handleToken = async(token)=>{
+    //  console.log(token);
+    const cart = {name: 'All Products', totalPrice}
+    const response = await axios.post('http://localhost:8080/checkout',{
+        token,
+        cart
+    })
+    console.log(response);
+    let {status}=response.data;
+    console.log(status);
+    if(status==='success'){
+        navigate('/');
+        toast.success('Your order has been placed successfully', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+          });
+          
+          const uid = auth.currentUser.uid;
+          const carts = await firestore.collection('Cart ' + uid).get();
+          for(var snap of carts.docs){
+              firestore.collection('Cart ' + uid).doc(snap.id).delete();
+          }
+    }
+    else{
+        alert('Something went wrong in checkout');
+    }
+ }
 
   return (
     <>
@@ -159,14 +197,14 @@ const Cart = () => {
           </div>
           <div className="summary-box">
             <h5>Cart Summary</h5>
-           <br/>
+            <br />
             <div>
               Total No of Products: <span>{totalQty}</span>
             </div>
             <div>
               Total Price to Pay: <span>$ {totalPrice}</span>
             </div>
-           <br/>
+            <br />
             <StripeCheckout
               stripeKey="pk_test_51N142SLBmYGXNvnxVIzSAeQQzvx2RZrNpUuvM2lS6rRGhdJWbpMxdFgUSDwVtLsziDFftKQr3QVmIR7DkTliDSji00ArbNgHqz"
               token={handleToken}
